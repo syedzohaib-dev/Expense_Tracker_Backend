@@ -9,7 +9,7 @@ const generateToken = (id) => {
     return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "1h" })
 };
 
-// Regiter User
+
 
 export const registerUser = async (req, res) => {
     const { fullName, email, password, profileImageUrl } = req.body;
@@ -27,7 +27,6 @@ export const registerUser = async (req, res) => {
         console.log(req.body)
 
 
-        // create the user
         const user = await User.create({
             fullName,
             email,

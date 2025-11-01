@@ -2,14 +2,13 @@ import User from "../model/User.js"
 import Expense from "../model/Expense.js"
 import xlsx from 'xlsx';
 
-// Add Expense source
 export const addExpense = async (req, res) => {
     const userId = req.user.id;
 
     try {
         const { icon, category, amount, date } = req.body;
 
-        // Validation: Check for missing fields
+        
         if (!category || !amount || !date) {
             return res.status(400).json({ message: "All fields are required" });
         }
@@ -28,7 +27,7 @@ export const addExpense = async (req, res) => {
         res.status(500).json({ message: "Server Error" });
     }
 }
-// Get all expense source
+
 export const getAllExpense = async (req, res) => {
     const userId = req.user.id;
     try {
@@ -38,7 +37,7 @@ export const getAllExpense = async (req, res) => {
         res.status(500).json({ message: "Server Error" });
     }
 }
-// Delete expense source
+
 export const deleteExpense = async (req, res) => {
     try {
         await Expense.findByIdAndDelete(req.params.id);
@@ -47,13 +46,13 @@ export const deleteExpense = async (req, res) => {
         res.status(500).json({ message: "Server Error" });
     }
 }
-// Download Expense Excel
+
 export const downloadExpenseExcel = async (req, res) => {
     const userId = req.user.id;
     try {
         const expense = await Expense.find({ userId }).sort({ date: -1 });
 
-        // Prepare data for Excel
+       
         const data = expense.map((item) => ({ 
             Category: item.category,
             Amount: item.amount,

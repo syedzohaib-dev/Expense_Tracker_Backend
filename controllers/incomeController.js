@@ -2,14 +2,13 @@ import User from "../model/User.js"
 import Income from "../model/Income.js"
 import xlsx from 'xlsx';
 
-// Add income source
 export const addIncome = async (req, res) => {
     const userId = req.user.id;
 
     try {
         const { icon, source, amount, date } = req.body;
 
-        // Validation: Check for missing fields
+      
         if (!source || !amount || !date) {
             return res.status(400).json({ message: "All fields are required" });
         }
@@ -28,7 +27,7 @@ export const addIncome = async (req, res) => {
         res.status(500).json({ message: "Server Error" });
     }
 }
-// Get all income source
+
 export const getAllIncome = async (req, res) => {
     const userId = req.user.id;
     try {
@@ -38,7 +37,7 @@ export const getAllIncome = async (req, res) => {
         res.status(500).json({ message: "Server Error" });
     }
 }
-// Delete income source
+
 export const deleteIncome = async (req, res) => {
     try {
         await Income.findByIdAndDelete(req.params.id);
@@ -47,13 +46,13 @@ export const deleteIncome = async (req, res) => {
         res.status(500).json({ message: "Server Error" });
     }
 }
-// Download Excel
+
 export const downloadIncomeExcel = async (req, res) => {
     const userId = req.user.id;
     try {
         const income = await Income.find({ userId }).sort({ date: -1 });
 
-        // Prepare data for Excel
+        
         const data = income.map((item) => ({
             Source: item.source,
             Amount: item.amount,
