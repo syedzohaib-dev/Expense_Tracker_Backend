@@ -7,10 +7,7 @@ import cloudinary from '../config/cloudinary.js';
 import multer from "multer";
 
 
-
-
 const router = express.Router();
-
 
 router.post("/register", registerUser);
 router.post("/login", loginUser)
@@ -23,15 +20,15 @@ router.post("/upload-image", upload.single("image"), async (req, res) => {
       return res.status(400).json({ message: "No file uploaded" });
     }
 
-  
+
     const base64Data = `data:${req.file.mimetype};base64,${req.file.buffer.toString("base64")}`;
 
-   
+
     const result = await cloudinary.uploader.upload(base64Data, {
       folder: "user_profiles",
     });
 
-  
+
     res.status(200).json({
       message: "Image uploaded successfully",
       imageUrl: result.secure_url,

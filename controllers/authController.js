@@ -25,8 +25,6 @@ export const registerUser = async (req, res) => {
             return res.status(400).json({ message: "Email already in use" });
         }
         console.log(req.body)
-
-
         const user = await User.create({
             fullName,
             email,
