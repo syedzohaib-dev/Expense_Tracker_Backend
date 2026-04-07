@@ -8,7 +8,7 @@ export const addExpense = async (req, res) => {
     try {
         const { icon, category, amount, date } = req.body;
 
-        
+
         if (!category || !amount || !date) {
             return res.status(400).json({ message: "All fields are required" });
         }
@@ -52,8 +52,8 @@ export const downloadExpenseExcel = async (req, res) => {
     try {
         const expense = await Expense.find({ userId }).sort({ date: -1 });
 
-       
-        const data = expense.map((item) => ({ 
+
+        const data = expense.map((item) => ({
             Category: item.category,
             Amount: item.amount,
             Date: item.date,
@@ -62,8 +62,22 @@ export const downloadExpenseExcel = async (req, res) => {
         const wb = xlsx.utils.book_new();
         const ws = xlsx.utils.json_to_sheet(data);
         xlsx.utils.book_append_sheet(wb, ws, "Expense");
-        xlsx.writeFile(wb, 'Expense_details.xlsx');
-        res.download('expense_details.xlsx');
+        const buffer = xlsx.write(wb, {
+            type: "buffer",
+            bookType: "xlsx",
+        });
+        res.setHeader(
+            "Content-Type",
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        );
+        res.setHeader(
+            "Content-Disposition",
+            "attachment; filename=Expense_details.xlsx"
+        );
+
+        // xlsx.writeFile(wb, 'Expense_details.xlsx');
+        // res.download('expense_details.xlsx');
+        res.send(buffer);
     } catch (error) {
         res.status(500).json({ message: "Server Error" });
     }
