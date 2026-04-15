@@ -1,15 +1,11 @@
 import User from '../model/User.js';
 import jwt from 'jsonwebtoken'
-// import router from '../routes/authRoutes';
+import cloudinary from '../config/cloudinary.js';
 
-
-// Generate JWT token
 
 const generateToken = (id) => {
     return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "1h" })
 };
-
-
 
 export const registerUser = async (req, res) => {
     const { fullName, email, password, profileImageUrl } = req.body;
@@ -29,7 +25,6 @@ export const registerUser = async (req, res) => {
             fullName,
             email,
             password,
-            profileImageUrl
         })
 
         res.status(201).json({
@@ -78,11 +73,37 @@ export const getUserInfo = async (req, res) => {
             return res.status(400).json({ message: "User not found" })
         }
 
-        res.status(200).json(user)
+        res.status(200).json({ message: "Fetch User Successfully", user })
     } catch (error) {
         res.status(500)
-            .status({ message: "Error get user", error: error.message })
+            .json({ message: "Error get user", error: error.message })
     }
 }
 
+export const uploadProfile = async (req, res) => {
 
+    try {
+        console.log(req.file);
+        const userId = req.user.id;
+        if (!req.file) {
+            throw new ApiError(400, "No file uploaded");
+        }
+        const base64Data = `data:${req.file.mimetype};base64,${req.file.buffer.toString("base64")}`;
+        const result = await cloudinary.uploader.upload(base64Data, {
+            folder: "user_profiles",
+        });
+        const user = await User.findByIdAndUpdate(
+            userId,
+            { profileImageUrl: result.secure_url },
+            { new: true }
+        );
+        return res.status(200).json({
+            success: true,
+            imageUrl: result.secure_url,
+            user,
+        });
+    } catch (error) {
+        console.error("Error uploading profile image:", error);
+        return res.status(500).json({ success: false, message: "Error uploading profile image" });
+    }
+} 
